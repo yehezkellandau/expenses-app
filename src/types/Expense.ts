@@ -7,4 +7,6 @@ export type Expense = {
   created_at: string;
   updated_at: string;
   household_id: number;
+  month:number;
+  year: number;
 };
