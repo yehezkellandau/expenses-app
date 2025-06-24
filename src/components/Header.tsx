@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 const Header = () => {
     return (
         <header>
-            <h1>Expenses App</h1>
+            <h1><Link to="/">Expenses App</Link></h1>
             <nav>
                 <ul>
                 <li><Link to="/">Home</Link></li>
