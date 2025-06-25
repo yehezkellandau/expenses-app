@@ -12,6 +12,7 @@ import {
 import { SelectScrollable } from './ui/selectScrollable';
 import { Button } from "@/components/ui/button"
 import { AddExpense } from './ui/addExpense';
+import { X } from 'lucide-react';
 
 const List = () => {
     const today = new Date();
@@ -65,6 +66,16 @@ const List = () => {
     return (
         <div>
             <div className="flex flex-wrap items-center">
+                { filtersChanged && (
+                    <Button
+                    className="mb-5 mt-5 mr-3 ml-3"
+                    variant="destructive"
+                    onClick={resetToToday}
+                >
+                    <X strokeWidth={1.75} />
+                </Button>
+                    )
+                }
                 <SelectScrollable
                     value={String(month)}
                     onChange={(val) => setMonth(Number(val))}
@@ -75,13 +86,6 @@ const List = () => {
                     onChange={(val) => setYear(Number(val))}
                     options={yearsOptions}
                 />
-                <Button
-                    className="w-[100px] mb-5 mt-5 mr-3 ml-3"
-                    variant={filtersChanged ? "destructive" : "outline"}
-                    onClick={resetToToday}
-                >
-                    Today
-                </Button>
                 <AddExpense onAdded={fetchExpenses} />
             </div>
             <div className="overflow-x-auto px-4">
