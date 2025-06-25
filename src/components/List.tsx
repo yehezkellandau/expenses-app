@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { SelectScrollable } from './ui/selectScrollable';
 import { Button } from "@/components/ui/button"
-import {AddExpense} from './ui/addExpense';
+import { AddExpense } from './ui/addExpense';
 
 const List = () => {
     const today = new Date();
@@ -19,7 +19,7 @@ const List = () => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [month, setMonth] = useState<number>(today.getMonth() + 1); // 1-12
     const [year, setYear] = useState<number>(today.getFullYear());
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
     const monthOptions = [
         { label: "January", value: "1" },
@@ -34,30 +34,37 @@ const List = () => {
         { label: "October", value: "10" },
         { label: "November", value: "11" },
         { label: "December", value: "12" },
-    ]
+    ];
+
     const yearsOptions = Array.from({ length: 101 }, (_, i) => {
         const year = 2000 + i;
         return { label: year, value: year };
     });
+
     const resetToToday = () => {
         const today = new Date();
         setMonth(today.getMonth() + 1);
         setYear(today.getFullYear());
     };
+
     const currentMonth = today.getMonth() + 1;
     const currentYear = today.getFullYear();
-
     const filtersChanged = month !== currentMonth || year !== currentYear;
 
-    useEffect(() => {
-        setLoading(true)
+    const fetchExpenses = () => {
+        setLoading(true);
         getExpenses(month, year)
             .then(setExpenses)
-            .finally(() => setLoading(false))
-    }, [month, year])
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchExpenses();
+    }, [month, year]);
+
     return (
         <div>
-            <div className="flex">
+            <div className="flex flex-wrap items-center">
                 <SelectScrollable
                     value={String(month)}
                     onChange={(val) => setMonth(Number(val))}
@@ -75,7 +82,7 @@ const List = () => {
                 >
                     Today
                 </Button>
-                <AddExpense />
+                <AddExpense onAdded={fetchExpenses} />
             </div>
             <div className="overflow-x-auto px-4">
                 <Table className="min-w-full">
@@ -114,7 +121,7 @@ const List = () => {
                 </Table>
             </div>
         </div>
-
     );
 };
+
 export default List;

@@ -1,8 +1,8 @@
 import axios from 'axios';
  
 const api = axios.create({
-  baseURL: 'http://expenses-api.yehezkellandau.com/api/', // Replace with your real URL
-  withCredentials: false, // if you use cookies/session
+  baseURL: 'https://www.expenses-api.yehezkellandau.com/api/', // Replace with your real URL
+  withCredentials: true, // if you use cookies/session
 });
 
 export default api;
