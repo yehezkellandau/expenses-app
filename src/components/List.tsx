@@ -3,15 +3,15 @@ import { getExpenses } from '../api/expenses';
 import { type Expense } from '../types/Expense';
 import {
     Table,
+    TableHead,
     TableBody,
     TableCell,
-    TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { SelectScrollable } from './selectScrollable';
+import { SelectScrollable } from './ui/selectScrollable';
 import { Button } from "@/components/ui/button"
-import { Plus } from 'lucide-react';
+import {AddExpense} from './ui/addExpense';
 
 const List = () => {
     const today = new Date();
@@ -75,13 +75,7 @@ const List = () => {
                 >
                     Today
                 </Button>
-                <Button
-                    className="w-[130px] mb-5 mt-5 mr-3 ml-3"
-                    onClick={resetToToday}
-                >
-                    <Plus strokeWidth={1.75} />
-                    Add Expense
-                </Button>
+                <AddExpense />
             </div>
             <div className="overflow-x-auto px-4">
                 <Table className="min-w-full">
