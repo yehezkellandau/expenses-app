@@ -8,7 +8,6 @@ import {
   import { type Expense } from "@/types/Expense";
   import { ExpenseForm } from "./ExpenseForm";
   import api from "@/api/axios";
-  import { useState, useEffect } from "react";
   
   type Props = {
     open: boolean;

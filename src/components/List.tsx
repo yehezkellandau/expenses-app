@@ -18,7 +18,7 @@ const List = () => {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
   const [modalOpen, setModalOpen] = useState(false);  // single modal open state
-  const [isAdding, setIsAdding] = useState(false);    // track add vs edit mode
+  const [, setIsAdding] = useState(false);    // track add vs edit mode
 
   const fetchExpenses = () => {
     setLoading(true);
