@@ -3,72 +3,75 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
-  } from "@/components/ui/dialog";
-  import { type Expense } from "@/types/Expense";
-  import { ExpenseForm } from "./ExpenseForm";
-  import api from "@/api/axios";
-  
-  type Props = {
+} from "@/components/ui/dialog";
+import { type Expense } from "@/types/Expense";
+import api from "@/api/axios";
+import { useState } from "react";
+import { ExpenseForm } from "./ExpenseForm";
+
+
+interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     initialData?: Expense | null;
     onSaved: () => void;
-  };
-  
-  export function ExpenseModal({
+}
+
+export function ExpenseModal({
     open,
     onOpenChange,
     initialData,
     onSaved,
-  }: Props) {
+}: Props) {
     const isEditing = !!initialData;
-  
+
+    const [apiErrors, setApiErrors] = useState<Record<string, string[]> | undefined>(undefined);
+
     const handleSave = async (payload: {
-      category: string;
-      amount: number;
-      type: "cash" | "credit_card";
-      date: string;
+        category: string;
+        amount: number;
+        type: "cash" | "credit_card";
+        date: string;
     }) => {
-      try {
-        if (isEditing && initialData) {
-          await api.put(`/expenses/${initialData.id}`, {
-            ...payload,
-            household_id: initialData.household_id,
-          });
-        } else {
-          await api.post("/expenses", {
-            ...payload,
-            household_id: 1,
-          });
+        setApiErrors(undefined); // reset errors before submit
+        onOpenChange(false);  // optimistically close modal (optional)
+
+        try {
+            if (isEditing && initialData) {
+                await api.put(`/expenses/${initialData.id}`, payload);
+            } else {
+                await api.post("/expenses", payload);
+            }
+            onSaved(); // refresh parent data
+        } catch (err: any) {
+            onOpenChange(true); // reopen modal
+            if (err.response?.data?.errors) {
+                setApiErrors(err.response.data.errors);
+            } else {
+                setApiErrors({ general: [err.message || "Unknown error"] });
+            }
         }
-  
-        onSaved();
-        onOpenChange(false);
-      } catch (err) {
-        console.error("Error saving expense", err);
-      }
     };
-  
+
+    // Handler when user cancels
     const handleCancel = () => {
-      onOpenChange(false);
+        onOpenChange(false);
     };
-  
+
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[90%] sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{isEditing ? "Edit Expense" : "Add Expense"}</DialogTitle>
-          </DialogHeader>
-  
-          <ExpenseForm
-            initialData={initialData}
-            onSaved={handleSave}
-            onCancel={handleCancel}
-          />
-          <DialogFooter />
-        </DialogContent>
-      </Dialog>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="w-[90%] sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>{isEditing ? "Edit Expense" : "Add Expense"}</DialogTitle>
+                </DialogHeader>
+
+                <ExpenseForm
+                    initialData={initialData}
+                    onSaved={handleSave}
+                    onCancel={handleCancel}
+                    errors={apiErrors}
+                />
+            </DialogContent>
+        </Dialog>
     );
-  }
-  
+}
