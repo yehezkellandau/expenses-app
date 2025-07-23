@@ -8,22 +8,9 @@ body{
   margin: 0;
   padding: 0;
 }
-header{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-}
 ul{
-  list-style-type: none;
-  display: flex;
-  justify-content: space-around;
-}
-nav ul li a{
-  display: inline-block;
-  padding:15px 20px;
-  text-decoration: none;
-  color:black;
+  margin: 0;
+  padding:0;
 }
 
 @layer base {
