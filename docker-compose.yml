@@ -1,0 +1,13 @@
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: react-app
+    volumes:
+      - .:/app          # mount project files
+      - /app/node_modules  # don’t overwrite node_modules inside container
+    ports:
+      - "5173:5173"     # Vite dev server
+    stdin_open: true
+    tty: true
