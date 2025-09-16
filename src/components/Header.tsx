@@ -1,13 +1,22 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { getToken, logout } from '@/services/auth';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const token = getToken();
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    navigate('/login');
+  };
 
   return (
     <header className="bg-gray-500 relative z-50 w-full">
       <div className="max-w-[1280px] mx-auto flex justify-between items-center p-4 h-16">
-      {/* Logo */}
+        {/* Logo */}
         <h1>
           <NavLink className="inline-block text-white text-xl font-bold" to="/">
             Expenses App
@@ -27,16 +36,30 @@ const Header = () => {
                 List
               </NavLink>
             </li>
-            <li>
-              <NavLink className="text-sm text-white hover:text-blue-400" to="/login">
-                Login
-              </NavLink>
-            </li>
-            <li>
-              <NavLink className="text-sm text-white hover:text-blue-400" to="/login">
-                Sign up
-              </NavLink>
-            </li>
+
+            {!token ? (
+              <>
+                <li>
+                  <NavLink className="text-sm text-white hover:text-blue-400" to="/login">
+                    Login
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="text-sm text-white hover:text-blue-400" to="/register">
+                    Sign up
+                  </NavLink>
+                </li>
+              </>
+            ) : (
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-red-300 hover:text-red-500"
+                >
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -68,7 +91,7 @@ const Header = () => {
         />
       )}
 
-      {/* Mobile Menu with Slide Animation */}
+      {/* Mobile Menu */}
       <nav
         className={`fixed top-0 right-0 w-64 h-full bg-gray-600 transform ${
           menuOpen ? 'translate-x-0' : 'translate-x-full'
@@ -112,24 +135,38 @@ const Header = () => {
               List
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              className="block text-sm text-white hover:text-blue-400 py-2"
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-            >
-              Login
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className="block text-sm text-white hover:text-blue-400 py-2"
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-            >
-              Sign up
-            </NavLink>
-          </li>
+
+          {!token ? (
+            <>
+              <li>
+                <NavLink
+                  className="block text-sm text-white hover:text-blue-400 py-2"
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  className="block text-sm text-white hover:text-blue-400 py-2"
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Sign up
+                </NavLink>
+              </li>
+            </>
+          ) : (
+            <li>
+              <button
+                onClick={handleLogout}
+                className="block text-sm text-red-300 hover:text-red-500 py-2"
+              >
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
     </header>
