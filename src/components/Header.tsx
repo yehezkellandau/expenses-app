@@ -19,7 +19,7 @@ const Header = () => {
         {/* Logo */}
         <h1>
           <NavLink className="inline-block text-white text-xl font-bold" to="/">
-            Expenses App
+            Expenses App-test
           </NavLink>
         </h1>
 
