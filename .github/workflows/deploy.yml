@@ -26,5 +26,12 @@ jobs:
           npm install
           npm run build
 
+      - name: Show workspace
+        run: |
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          pwd
+          ls -l
+          find . -name build
+
       - name: Copy build to subdomain folder
         run: rsync -av --delete $GITHUB_WORKSPACE/build/ /home/lsei9899/public_html/expenses-app/
