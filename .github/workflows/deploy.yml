@@ -22,9 +22,9 @@ jobs:
 
       - name: Build React app
         run: |
-          cd expenses-app   
+          cd $GITHUB_WORKSPACE   
           npm install
           npm run build
 
       - name: Copy build to subdomain folder
-        run: rsync -av --delete ./expenses-app/build/ /home/lsei9899/public_html/expenses-app/
+        run: rsync -av --delete $GITHUB_WORKSPACE/build/ /home/lsei9899/public_html/expenses-app/
