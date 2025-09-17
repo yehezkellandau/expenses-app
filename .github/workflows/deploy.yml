@@ -1,37 +1,38 @@
-name: Deploy React App
+name: Build and Deploy React App
 
 on:
   push:
     branches:
-      - prod
+      - prod  # Deploy only when pushing to prod branch
 
 jobs:
-  deploy:
+  build-deploy:
     runs-on: self-hosted
+
     steps:
-      - name: Checkout React code
-        uses: actions/checkout@v3
+      # 1️⃣ Checkout your repo
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
+      # 2️⃣ Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build React app
+      # 3️⃣ Install dependencies & build React
+      - name: Install & Build React
         run: |
-          cd $GITHUB_WORKSPACE   
-          npm install
-          npm run build
+          cd $GITHUB_WORKSPACE               # Go to repo root
+          npm ci                              # Clean install dependencies
+          npm run build                        # Build the Vite React app (outputs to dist/)
 
-      - name: Show workspace
+      # 4️⃣ Deploy dist folder to your live site
+      - name: Deploy to public_html
         run: |
-          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-          pwd
-          ls -l
-          find . -name build
+          rsync -av --delete $GITHUB_WORKSPACE/dist/ /home/lsei9899/public_html/expenses-app/
 
-      - name: Copy build to subdomain folder
-        run: rsync -av --delete $GITHUB_WORKSPACE/build/ /home/lsei9899/public_html/expenses-app/
+      # 5️⃣ Optional: verify deployment
+      - name: List deployed files
+        run: |
+          ls -l /home/lsei9899/public_html/expenses-app
