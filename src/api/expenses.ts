@@ -1,7 +1,7 @@
 import api from './axios';
 import { type Expense } from '@/types/Expense';
 
-// Fetch all expenses
+// Fetch all expenses 
 export const getExpenses = async (month: number, year: number, token: string): Promise<Expense[]> => {
   const response = await api.get(`expenses?month=${month}&year=${year}`, {
     headers: {
