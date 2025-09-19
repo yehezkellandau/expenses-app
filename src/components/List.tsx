@@ -22,24 +22,20 @@ const List = () => {
     const [modalOpen, setModalOpen] = useState(false);  // single modal open state
     const [, setIsAdding] = useState(false);    // track add vs edit mode
 
-    // Add this conditional check
-    const totals = expenses && expenses.length > 0
-        ? expenses.reduce(
-            (acc, exp) => {
-                const amount = Number(exp.amount);
-                acc.total += amount;
-                if (exp.type === "cash") {
-                    acc.cash += amount;
-                } else if (exp.type === "credit_card") {
-                    acc.credit += amount;
-                }
-                return acc;
-            },
-            { total: 0, cash: 0, credit: 0 }
-        )
-        : { total: 0, cash: 0, credit: 0 }; // Return an empty total object if expenses is not an array
-
-    
+    const totals = expenses.reduce(
+        (acc, exp) => {
+            const amount = Number(exp.amount); // <== important
+            console.log(expenses);
+            acc.total += amount;
+            if (exp.type === "cash") {
+                acc.cash += amount;
+            } else if (exp.type === "credit_card") {
+                acc.credit += amount;
+            }
+            return acc;
+        },
+        { total: 0, cash: 0, credit: 0 }
+    );
 
     const fetchExpenses = () => {
         setLoading(true);
