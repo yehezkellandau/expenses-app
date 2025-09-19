@@ -41,15 +41,23 @@ const List = () => {
         setLoading(true);
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         if (!token) {
-            setExpenses([]);
+            setExpenses([]); // Ensure it's an array
             setLoading(false);
             return;
         }
 
         getExpenses(month, year, token)
-            .then(setExpenses)
+            .then(data => {
+                // Ensure the fetched data is an array
+                setExpenses(Array.isArray(data) ? data : []);
+            })
+            .catch(error => {
+                // Log the error for debugging
+                console.error("Failed to fetch expenses:", error);
+                // Ensure state is an array even on error
+                setExpenses([]);
+            })
             .finally(() => setLoading(false));
-
     };
 
     useEffect(() => {
