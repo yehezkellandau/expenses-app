@@ -2,12 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Home from '../components/Home';
 import List from '../components/List';
-import LoginPage from '@/components/Login';
-import PrivateRoute from '@/router/PrivateRouter'; // <-- import
+import LoginPage from '../components/Login';
+import PrivateRoute from './PrivateRouter'; // <-- import
 
 const Router = () => {
   return (
-    <BrowserRouter basename="/expenses-app"> 
     <Routes>
       {/* Public route */}
       <Route path="login" element={<LoginPage />} />
@@ -20,7 +19,6 @@ const Router = () => {
         </Route>
       </Route>
     </Routes>
-      </BrowserRouter>
   );
 };
 
