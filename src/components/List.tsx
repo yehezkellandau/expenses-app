@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import { ExpenseActions } from "./ui/ExpenseActions";
 import { ExpenseModal } from "./ui/ExpenseModal";
 import ExpenseSummary from "./ui/ExpenseSummary";
-import { DollarSign,CreditCard } from "lucide-react";
+import { DollarSign, CreditCard } from "lucide-react";
 
 const List = () => {
     const today = new Date();
@@ -22,26 +22,38 @@ const List = () => {
     const [modalOpen, setModalOpen] = useState(false);  // single modal open state
     const [, setIsAdding] = useState(false);    // track add vs edit mode
 
-    const totals = expenses.reduce(
-        (acc, exp) => {
-          const amount = Number(exp.amount); // <== important
-          console.log(expenses);
-          acc.total += amount;
-          if (exp.type === "cash") {
-            acc.cash += amount;
-          } else if (exp.type === "credit_card") {
-            acc.credit += amount;
-          }
-          return acc;
-        },
-        { total: 0, cash: 0, credit: 0 }
-    );
+    // Add this conditional check
+    const totals = expenses && expenses.length > 0
+        ? expenses.reduce(
+            (acc, exp) => {
+                const amount = Number(exp.amount);
+                acc.total += amount;
+                if (exp.type === "cash") {
+                    acc.cash += amount;
+                } else if (exp.type === "credit_card") {
+                    acc.credit += amount;
+                }
+                return acc;
+            },
+            { total: 0, cash: 0, credit: 0 }
+        )
+        : { total: 0, cash: 0, credit: 0 }; // Return an empty total object if expenses is not an array
+
+    
 
     const fetchExpenses = () => {
         setLoading(true);
-        getExpenses(month, year)
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        if (!token) {
+            setExpenses([]);
+            setLoading(false);
+            return;
+        }
+
+        getExpenses(month, year, token)
             .then(setExpenses)
             .finally(() => setLoading(false));
+
     };
 
     useEffect(() => {
@@ -147,7 +159,10 @@ const List = () => {
                                             onEdit={() => openEditModal(exp)}
                                             onDelete={async (id) => {
                                                 if (confirm("Are you sure you want to delete this expense?")) {
-                                                    await deleteExpense(id);
+                                                    const token = localStorage.getItem("token");
+                                                    if (!token) return;
+
+                                                    await deleteExpense(id, token);
                                                     fetchExpenses();
                                                 }
                                             }}

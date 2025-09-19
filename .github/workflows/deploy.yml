@@ -30,7 +30,8 @@ jobs:
       # 4️⃣ Deploy dist folder to your live site
       - name: Deploy to public_html
         run: |
-          rsync -av --delete $GITHUB_WORKSPACE/dist/ /home/lsei9899/public_html/expenses-app/
+          rsync -av --delete --exclude '.htaccess' $GITHUB_WORKSPACE/dist/ /home/lsei9899/public_html/expenses-app/
+
 
       # 5️⃣ Optional: verify deployment
       - name: List deployed files
