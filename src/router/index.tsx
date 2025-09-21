@@ -4,12 +4,14 @@ import Home from '../components/Home';
 import List from '../components/List';
 import LoginPage from '../components/Login';
 import PrivateRoute from './PrivateRouter'; // <-- import
+import SignupPage from '@/components/Signup';
 
 const Router = () => {
   return (
     <Routes>
       {/* Public route */}
       <Route path="login" element={<LoginPage />} />
+      <Route path="signup" element={<SignupPage />} />
 
       {/* Protected routes */}
       <Route element={<PrivateRoute />}>

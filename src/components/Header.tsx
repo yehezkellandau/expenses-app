@@ -26,17 +26,6 @@ const Header = () => {
         {/* Desktop Menu */}
         <nav className="hidden md:block">
           <ul className="flex space-x-4">
-            <li>
-              <NavLink className="text-sm text-white hover:text-blue-400" to="/">
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink className="text-sm text-white hover:text-blue-400" to="/list">
-                List
-              </NavLink>
-            </li>
-
             {!token ? (
               <>
                 <li>
@@ -45,23 +34,36 @@ const Header = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink className="text-sm text-white hover:text-blue-400" to="/register">
+                  <NavLink className="text-sm text-white hover:text-blue-400" to="/signup">
                     Sign up
                   </NavLink>
                 </li>
               </>
             ) : (
-              <li>
-                <button
-                  onClick={handleLogout}
-                  className="text-sm text-red-300 hover:text-red-500"
-                >
-                  Logout
-                </button>
-              </li>
+              <>
+                <li>
+                  <NavLink className="text-sm text-white hover:text-blue-400" to="/">
+                    Home
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="text-sm text-white hover:text-blue-400" to="/list">
+                    List
+                  </NavLink>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm text-red-300 hover:text-red-500"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
             )}
           </ul>
         </nav>
+
 
         {/* Menu Button (mobile, only when closed) */}
         {!menuOpen && (
@@ -93,9 +95,8 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <nav
-        className={`fixed top-0 right-0 w-64 h-full bg-gray-600 transform ${
-          menuOpen ? 'translate-x-0' : 'translate-x-full'
-        } transition-transform duration-300 ease-in-out md:hidden z-50`}
+        className={`fixed top-0 right-0 w-64 h-full bg-gray-600 transform ${menuOpen ? 'translate-x-0' : 'translate-x-full'
+          } transition-transform duration-300 ease-in-out md:hidden z-50`}
       >
         {/* Close Button inside Menu */}
         <div className="flex justify-end p-4">
@@ -117,25 +118,6 @@ const Header = () => {
         </div>
 
         <ul className="flex flex-col items-center text-center p-4 space-y-2">
-          <li>
-            <NavLink
-              className="block text-sm text-white hover:text-blue-400 py-2"
-              to="/"
-              onClick={() => setMenuOpen(false)}
-            >
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className="block text-sm text-white hover:text-blue-400 py-2"
-              to="/list"
-              onClick={() => setMenuOpen(false)}
-            >
-              List
-            </NavLink>
-          </li>
-
           {!token ? (
             <>
               <li>
@@ -150,7 +132,7 @@ const Header = () => {
               <li>
                 <NavLink
                   className="block text-sm text-white hover:text-blue-400 py-2"
-                  to="/register"
+                  to="/signup"
                   onClick={() => setMenuOpen(false)}
                 >
                   Sign up
@@ -158,14 +140,34 @@ const Header = () => {
               </li>
             </>
           ) : (
-            <li>
-              <button
-                onClick={handleLogout}
-                className="block text-sm text-red-300 hover:text-red-500 py-2"
-              >
-                Logout
-              </button>
-            </li>
+            <>
+              <li>
+                <NavLink
+                  className="block text-sm text-white hover:text-blue-400 py-2"
+                  to="/"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  className="block text-sm text-white hover:text-blue-400 py-2"
+                  to="/list"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  List
+                </NavLink>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="block text-sm text-red-300 hover:text-red-500 py-2"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
           )}
         </ul>
       </nav>
