@@ -1,77 +1,98 @@
+// src/components/ui/ExpenseModal.tsx
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { type Expense } from "@/types/Expense";
-import api from "@/api/axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpenseForm } from "./ExpenseForm";
-
+import type { ExpensePayload } from "@/api/expenses";
 
 interface Props {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    initialData?: Expense | null;
-    onSaved: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  initialData?: Expense | null;
+  /**
+   * onSaved: parent should perform API (create/update) and refresh data.
+   * - payload: the ExpensePayload object
+   * - id?: when editing, the id of the expense to update
+   * Should throw on failure (so modal can display errors).
+   */
+  onSaved: (payload: ExpensePayload, id?: number) => Promise<void>;
 }
 
-export function ExpenseModal({
-    open,
-    onOpenChange,
-    initialData,
-    onSaved,
-}: Props) {
-    const isEditing = !!initialData;
+export function ExpenseModal({ open, onOpenChange, initialData, onSaved }: Props) {
+  const isEditing = !!initialData;
+  const [apiErrors, setApiErrors] = useState<Record<string, string[]> | undefined>(undefined);
+  const [isSaving, setIsSaving] = useState(false);
 
-    const [apiErrors, setApiErrors] = useState<Record<string, string[]> | undefined>(undefined);
+  // Intercept Dialog open-change so we can prevent closing while saving
+  const handleDialogOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen && isSaving) {
+      // prevent close while saving
+      return;
+    }
+    if (!nextOpen) {
+      setApiErrors(undefined);
+    }
+    onOpenChange(nextOpen);
+  };
 
-    const handleSave = async (payload: {
-        category: string;
-        amount: number;
-        type: "cash" | "credit_card";
-        date: string;
-    }) => {
-        setApiErrors(undefined); // reset errors before submit
-        onOpenChange(false);  // optimistically close modal (optional)
+  const handleSave = async (payload: ExpensePayload) => {
+    setApiErrors(undefined);
+    setIsSaving(true);
 
-        try {
-            if (isEditing && initialData) {
-                await api.put(`/expenses/${initialData.id}`, payload);
-            } else {
-                await api.post("/expenses", payload);
-            }
-            onSaved(); // refresh parent data
-        } catch (err: any) {
-            onOpenChange(true); // reopen modal
-            if (err.response?.data?.errors) {
-                setApiErrors(err.response.data.errors);
-            } else {
-                setApiErrors({ general: [err.message || "Unknown error"] });
-            }
-        }
-    };
+    try {
+      // let parent do create/update and refresh
+      await onSaved(payload, initialData ? initialData.id : undefined);
+      // close only after parent succeeded
+      onOpenChange(false);
+    } catch (err: any) {
+      // axios-style validation errors: err.response.data.errors
+      if (err?.response?.data?.errors) {
+        setApiErrors(err.response.data.errors);
+      } else if (err?.message) {
+        setApiErrors({ general: [err.message] });
+      } else {
+        setApiErrors({ general: ["Unknown error"] });
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-    // Handler when user cancels
-    const handleCancel = () => {
-        onOpenChange(false);
-    };
+  const handleCancel = () => {
+    if (!isSaving) {
+      setApiErrors(undefined);
+      onOpenChange(false);
+    }
+  };
 
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="w-[90%] sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{isEditing ? "Edit Expense" : "Add Expense"}</DialogTitle>
-                </DialogHeader>
+  useEffect(() => {
+    if (!open) {
+      // clear state when modal closes
+      setApiErrors(undefined);
+      setIsSaving(false);
+    }
+  }, [open]);
 
-                <ExpenseForm
-                    initialData={initialData}
-                    onSaved={handleSave}
-                    onCancel={handleCancel}
-                    errors={apiErrors}
-                />
-            </DialogContent>
-        </Dialog>
-    );
+  return (
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+      <DialogContent className="w-[90%] sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{isEditing ? "Edit Expense" : "Add Expense"}</DialogTitle>
+        </DialogHeader>
+
+        <ExpenseForm
+          initialData={initialData}
+          onSubmit={handleSave}
+          onCancel={handleCancel}
+          errors={apiErrors}
+          loading={isSaving}
+        />
+      </DialogContent>
+    </Dialog>
+  );
 }
